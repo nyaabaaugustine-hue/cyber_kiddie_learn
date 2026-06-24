@@ -152,7 +152,7 @@ export function Quiz({ questions, typeChallenge, subject, addStar, incrementQuiz
     const accepted = (tc.acceptedAnswers || [tc.answer]).map((a) => a.toLowerCase())
     const correct = accepted.includes(userAnswer)
 
-    setTypeResult(correct)
+    setTypeResult(correct ? 'correct' : 'wrong')
     if (correct) {
       addStar(1)
       setTypeCorrectCount((c) => c + 1)
