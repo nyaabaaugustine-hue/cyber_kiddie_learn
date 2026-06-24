@@ -1,0 +1,17 @@
+{
+  "name": "KidLearner",
+  "short_name": "KidLearner",
+  "description": "A fun, safe learning app for kids — Space, Animals, Dinosaurs, Science, Ocean & Robots!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFCF7",
+  "theme_color": "#6366F1",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}
