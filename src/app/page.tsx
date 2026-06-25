@@ -26,6 +26,9 @@ export default function Home() {
   useEffect(() => {
     if (store.loaded) {
       setOnboardStep(store.state.onboarded ? 'done' : 'guardian')
+      if (store.state.onboarded) {
+        store.logActivity('login', `${store.state.childName} opened the app`)
+      }
     }
   }, [store.loaded, store.state.onboarded])
 
@@ -41,7 +44,8 @@ export default function Home() {
   const handleSubjectSelect = useCallback((subject: string) => {
     setSelectedSubject(subject)
     setScreen('learning')
-  }, [])
+    store.logActivity('subject_open', `Opened ${subject}`, subject)
+  }, [store])
 
   const handleBack = useCallback(() => {
     setSelectedSubject(null)
@@ -120,6 +124,7 @@ export default function Home() {
             completed={store.state.completed}
             showToast={showToast}
             recommendedVideos={store.state.recommendedVideos || []}
+            logActivity={store.logActivity}
           />
         )}
         {screen === 'myvideos' && (
@@ -148,6 +153,10 @@ export default function Home() {
         resetProgress={store.resetProgress}
         addRecommendedVideo={store.addRecommendedVideo}
         removeRecommendedVideo={store.removeRecommendedVideo}
+        clearActivityLog={store.clearActivityLog}
+        addStreakFreeze={store.addStreakFreeze}
+        useStreakFreeze={store.useStreakFreeze}
+        setDailyGoal={store.setDailyGoal}
       />
 
       <Toast msg={toast.msg} visible={toast.visible} />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { QuizQuestion, TypeQuestion } from '@/lib/types'
+import { QuizQuestion, TypeQuestion, ActivityType } from '@/lib/types'
 import { useVoice } from '@/lib/useVoice'
 
 interface QuizProps {
@@ -13,6 +13,7 @@ interface QuizProps {
   onComplete: (allCorrect: boolean) => void
   recordQuizResult: (subject: string, correct: number, total: number) => void
   showToast: (msg: string) => void
+  logActivity: (type: ActivityType, detail: string, meta?: string) => void
 }
 
 const TIMER_SECONDS = 20
@@ -26,7 +27,7 @@ function getGrade(accuracy: number, timeBonus: number): { grade: string; color: 
   return { grade: 'D', color: 'text-slate-400', emoji: '📚' }
 }
 
-export function Quiz({ questions, typeChallenge, subject, addStar, incrementQuizzes, onComplete, recordQuizResult, showToast }: QuizProps) {
+export function Quiz({ questions, typeChallenge, subject, addStar, incrementQuizzes, onComplete, recordQuizResult, showToast, logActivity }: QuizProps) {
   const [currentIdx, setCurrentIdx] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [allCorrect, setAllCorrect] = useState(true)
@@ -57,6 +58,7 @@ export function Quiz({ questions, typeChallenge, subject, addStar, incrementQuiz
 
   useEffect(() => {
     startTimeRef.current = Date.now()
+    logActivity('quiz_start', `Started ${subject} quiz`, subject)
   }, [])
 
   useEffect(() => {
@@ -143,8 +145,10 @@ export function Quiz({ questions, typeChallenge, subject, addStar, incrementQuiz
     setElapsedTime(elapsed)
     setCorrectCount(mcCorrect)
     setFinished(true)
+    const accuracy = mcTotal > 0 ? Math.round((mcCorrect / mcTotal) * 100) : 0
+    logActivity('quiz_complete', `Completed ${subject} quiz — ${mcCorrect}/${mcTotal} correct (${accuracy}%) in ${elapsed}s`, `${subject}:${mcCorrect}/${mcTotal}:${elapsed}s:${accuracy}%`)
     onComplete(allCorrect && mcCorrect === mcTotal)
-  }, [allCorrect, onComplete])
+  }, [allCorrect, onComplete, logActivity, subject])
 
   const handleTypeSubmit = useCallback(() => {
     const tc = typeChallenge[typeIdx]

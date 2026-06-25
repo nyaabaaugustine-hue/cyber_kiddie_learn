@@ -58,7 +58,20 @@ export interface AppState {
   totalCorrect: number
   totalAttempts: number
   recommendedVideos: RecommendedVideo[]
+  activityLog: ActivityEntry[]
+  streakFreezes: number
+  dailyGoal: number
 }
 
 export type Screen = 'welcome' | 'selection' | 'learning' | 'myvideos'
 export type Tab = 'facts' | 'quiz' | 'ask' | 'forYou'
+
+export type ActivityType = 'screen' | 'subject_open' | 'tab_switch' | 'quiz_start' | 'quiz_complete' | 'video_watch' | 'ai_question' | 'star_earned' | 'streak' | 'login'
+
+export interface ActivityEntry {
+  id: string
+  type: ActivityType
+  detail: string
+  meta?: string
+  timestamp: number
+}

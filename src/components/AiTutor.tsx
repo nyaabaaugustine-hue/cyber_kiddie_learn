@@ -1,14 +1,16 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { ActivityType } from '@/lib/types'
 
 interface AiTutorProps {
   subject: string
   addStar: (count?: number) => void
   showToast: (msg: string) => void
+  logActivity: (type: ActivityType, detail: string, meta?: string) => void
 }
 
-export function AiTutor({ subject, addStar, showToast }: AiTutorProps) {
+export function AiTutor({ subject, addStar, showToast, logActivity }: AiTutorProps) {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,12 +35,13 @@ export function AiTutor({ subject, addStar, showToast }: AiTutorProps) {
       setAnswer(data.answer || 'Hmm, I need to think about that! Ask a grown-up too!')
       addStar(1)
       showToast('⭐ +1 Star for curiosity!')
+      logActivity('ai_question', `Asked about ${subject}: "${q}"`, subject)
     } catch {
       setAnswer("🤔 I couldn't answer right now — check your internet and try again!")
     }
 
     setLoading(false)
-  }, [question, subject, addStar, showToast])
+  }, [question, subject, addStar, showToast, logActivity])
 
   return (
     <div className="space-y-4">

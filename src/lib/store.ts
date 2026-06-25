@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { AppState, SubjectScore, RecommendedVideo } from './types'
+import { AppState, SubjectScore, RecommendedVideo, ActivityEntry, ActivityType } from './types'
 
 const STORAGE_KEY = 'kl_state'
+const MAX_ACTIVITY_LOG = 200
 
 const DEFAULT_STATE: AppState = {
   onboarded: false,
@@ -26,6 +27,9 @@ const DEFAULT_STATE: AppState = {
       addedAt: new Date().toISOString(),
     },
   ],
+  activityLog: [],
+  streakFreezes: 0,
+  dailyGoal: 3,
 }
 
 function loadState(): AppState {
@@ -47,6 +51,9 @@ function loadState(): AppState {
       totalCorrect: s.totalCorrect ?? 0,
       totalAttempts: s.totalAttempts ?? 0,
       recommendedVideos: s.recommendedVideos ?? DEFAULT_STATE.recommendedVideos,
+      activityLog: s.activityLog ?? [],
+      streakFreezes: s.streakFreezes ?? 0,
+      dailyGoal: s.dailyGoal ?? 3,
     }
   } catch {
     return DEFAULT_STATE
@@ -83,6 +90,20 @@ function extractYouTubeId(url: string): string | null {
   return null
 }
 
+function makeActivity(type: ActivityType, detail: string, meta?: string): ActivityEntry {
+  return {
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    type,
+    detail,
+    meta,
+    timestamp: Date.now(),
+  }
+}
+
+function trimLog(log: ActivityEntry[]): ActivityEntry[] {
+  return log.slice(-MAX_ACTIVITY_LOG)
+}
+
 export function useAppStore() {
   const [state, setState] = useState<AppState>(DEFAULT_STATE)
   const [loaded, setLoaded] = useState(false)
@@ -96,6 +117,14 @@ export function useAppStore() {
     setState(next)
     saveState(next)
   }, [])
+
+  const logActivity = useCallback(
+    (type: ActivityType, detail: string, meta?: string) => {
+      const entry = makeActivity(type, detail, meta)
+      persist({ ...state, activityLog: trimLog([...state.activityLog, entry]) })
+    },
+    [state, persist]
+  )
 
   const completeOnboarding = useCallback(
     (name: string, avatar: string) => {
@@ -115,8 +144,13 @@ export function useAppStore() {
     const today = new Date().toDateString()
     if (state.lastDate !== today) {
       const yesterday = new Date(Date.now() - 86400000).toDateString()
-      const streak = state.lastDate === yesterday ? state.streak + 1 : 1
-      persist({ ...state, streak, lastDate: today })
+      if (state.lastDate === yesterday) {
+        persist({ ...state, streak: state.streak + 1, lastDate: today })
+      } else if (state.lastDate && state.streakFreezes > 0) {
+        persist({ ...state, streakFreezes: state.streakFreezes - 1, lastDate: today })
+      } else {
+        persist({ ...state, streak: 1, lastDate: today })
+      }
     }
   }, [state, persist])
 
@@ -188,8 +222,31 @@ export function useAppStore() {
     [state, persist]
   )
 
+  const useStreakFreeze = useCallback(() => {
+    if (state.streakFreezes > 0) {
+      persist({ ...state, streakFreezes: state.streakFreezes - 1 })
+      return true
+    }
+    return false
+  }, [state, persist])
+
+  const addStreakFreeze = useCallback(() => {
+    persist({ ...state, streakFreezes: state.streakFreezes + 1 })
+  }, [state, persist])
+
+  const setDailyGoal = useCallback(
+    (goal: number) => {
+      persist({ ...state, dailyGoal: Math.max(1, Math.min(10, goal)) })
+    },
+    [state, persist]
+  )
+
   const resetProgress = useCallback(() => {
     persist({ ...DEFAULT_STATE, recommendedVideos: state.recommendedVideos })
+  }, [state, persist])
+
+  const clearActivityLog = useCallback(() => {
+    persist({ ...state, activityLog: [] })
   }, [state, persist])
 
   return {
@@ -203,6 +260,11 @@ export function useAppStore() {
     recordQuizResult,
     addRecommendedVideo,
     removeRecommendedVideo,
+    logActivity,
+    useStreakFreeze,
+    addStreakFreeze,
+    setDailyGoal,
     resetProgress,
+    clearActivityLog,
   }
 }

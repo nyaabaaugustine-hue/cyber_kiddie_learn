@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { SUBJECTS, SUBJECT_RECOMMENDATIONS } from '@/lib/data'
-import { Tab, RecommendedVideo } from '@/lib/types'
+import { Tab, RecommendedVideo, ActivityType } from '@/lib/types'
 import { Quiz } from '@/components/Quiz'
 import { AiTutor } from '@/components/AiTutor'
 
@@ -16,6 +16,7 @@ interface LearningScreenProps {
   completed: Record<string, boolean>
   showToast: (msg: string) => void
   recommendedVideos: RecommendedVideo[]
+  logActivity: (type: ActivityType, detail: string, meta?: string) => void
 }
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
@@ -25,9 +26,14 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'forYou', label: 'For You', icon: '🎬' },
 ]
 
-function VideoPlayer({ videoId, title, emoji }: { videoId: string; title: string; emoji: string }) {
+function VideoPlayer({ videoId, title, emoji, onPlay }: { videoId: string; title: string; emoji: string; onPlay?: () => void }) {
   const [playing, setPlaying] = useState(false)
   const [failed, setFailed] = useState(false)
+
+  const handlePlay = () => {
+    setPlaying(true)
+    onPlay?.()
+  }
 
   if (failed) {
     return (
@@ -64,7 +70,7 @@ function VideoPlayer({ videoId, title, emoji }: { videoId: string; title: string
 
   return (
     <button
-      onClick={() => setPlaying(true)}
+      onClick={handlePlay}
       className="relative w-full aspect-video bg-slate-900 rounded-3xl overflow-hidden mb-5 shadow-2xl shadow-slate-900/20 group cursor-pointer"
     >
       <img
@@ -180,6 +186,7 @@ export function LearningScreen({
   completed,
   showToast,
   recommendedVideos,
+  logActivity,
 }: LearningScreenProps) {
   const [tab, setTab] = useState<Tab>('facts')
   const info = SUBJECTS[subject]
@@ -219,14 +226,22 @@ export function LearningScreen({
       </button>
 
       {/* Video */}
-      <VideoPlayer videoId={info.video} title={info.label} emoji={info.emoji} />
+      <VideoPlayer
+        videoId={info.video}
+        title={info.label}
+        emoji={info.emoji}
+        onPlay={() => logActivity('video_watch', `Watching ${info.label} video`, subject)}
+      />
 
       {/* Tabs */}
       <div className="flex gap-1 bg-slate-100/80 p-1 rounded-2xl mb-5">
         {TABS.map(({ id, label, icon }) => (
           <button
             key={id}
-            onClick={() => setTab(id)}
+            onClick={() => {
+              setTab(id)
+              logActivity('tab_switch', `Switched to ${label} in ${subject}`, `${subject}:${id}`)
+            }}
             className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${
               tab === id
                 ? 'bg-white text-indigo-600 shadow-sm'
@@ -264,10 +279,11 @@ export function LearningScreen({
           onComplete={handleQuizComplete}
           recordQuizResult={recordQuizResult}
           showToast={showToast}
+          logActivity={logActivity}
         />
       )}
 
-      {tab === 'ask' && <AiTutor subject={subject} addStar={addStar} showToast={showToast} />}
+      {tab === 'ask' && <AiTutor subject={subject} addStar={addStar} showToast={showToast} logActivity={logActivity} />}
 
       {tab === 'forYou' && (
         <div className="space-y-4">
