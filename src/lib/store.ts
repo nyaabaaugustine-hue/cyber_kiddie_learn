@@ -20,9 +20,9 @@ const DEFAULT_STATE: AppState = {
   recommendedVideos: [
     {
       id: 'default_coding',
-      url: 'https://www.youtube.com/watch?v=fJuOWHhe2G4',
-      title: 'Coding for Kids',
-      videoId: 'fJuOWHhe2G4',
+      url: 'https://www.youtube.com/watch?v=iGQRj5V5TVc',
+      title: 'Learn Block Coding for Kids',
+      videoId: 'iGQRj5V5TVc',
       addedAt: new Date().toISOString(),
     },
   ],

@@ -196,7 +196,7 @@ export const SUBJECTS: Record<string, Subject> = {
     color: '#7C3AED',
     bg: 'bg-violet-50',
     border: 'border-violet-200',
-    video: 'dhO0oHfYjDc',
+    video: '8irSFvoyLHQ',
     facts: [
       { emoji: '📚', text: 'English has about 170,000 words currently in use — and new ones are added every year!' },
       { emoji: '🔤', text: 'The most common letter in English is "E"!' },
@@ -223,7 +223,7 @@ export const SUBJECTS: Record<string, Subject> = {
     color: '#10B981',
     bg: 'bg-emerald-50',
     border: 'border-emerald-200',
-    video: 'TSKfUPfHGBU',
+    video: 'iGQRj5V5TVc',
     facts: [
       { emoji: '💻', text: 'The first computer bug was an actual bug — a moth found stuck in a machine!' },
       { emoji: '🎮', text: 'The first video game was made in 1958 — it was like digital tennis!' },
@@ -244,6 +244,59 @@ export const SUBJECTS: Record<string, Subject> = {
       { q: 'What language looks like a snake?', answer: 'python', acceptedAnswers: ['python'] },
     ],
   },
+}
+
+export type SubjectRecommendation = {
+  videoId: string
+  title: string
+}
+
+export const SUBJECT_RECOMMENDATIONS: Record<string, SubjectRecommendation[]> = {
+  Space: [
+    { videoId: 'libKVRa01L8', title: 'Solar System 101 — National Geographic' },
+    { videoId: 'LIBf222g0eY', title: 'The Scale of the Universe' },
+    { videoId: 'eC2Y7wAJhN8', title: 'Planet Facts for Kids' },
+  ],
+  Animals: [
+    { videoId: 'eUunYTYia3I', title: 'Amazing Animals — Nat Geo Kids' },
+    { videoId: 'Xh1BMR7qXzY', title: 'Top 10 Animals for Kids' },
+    { videoId: '3APW2vqKN7Y', title: 'Jungle Animals for Children' },
+  ],
+  Dinosaurs: [
+    { videoId: 'ayKCzl5xRh4', title: 'Tyrannosaurus Rex — Pinkfong' },
+    { videoId: 'wbJMICL0hEo', title: 'Dinosaur Songs for Kids' },
+    { videoId: 'QkIJtS3GmVY', title: 'All About Dinosaurs' },
+  ],
+  Science: [
+    { videoId: 'lv6dC0coQeI', title: 'Earth Science for Kids' },
+    { videoId: 'Ki0aYVKnY_w', title: 'Science Experiments for Kids' },
+    { videoId: 'PQ8jyG4y2Ew', title: 'The Water Cycle for Kids' },
+  ],
+  Ocean: [
+    { videoId: 'GegMYU4MaAQ', title: 'Sea Animals for Kids' },
+    { videoId: '5zMFoVhWRc8', title: 'Deep Ocean Creatures' },
+    { videoId: '2bLF8fK9Jmk', title: 'Coral Reef Explained' },
+  ],
+  Robots: [
+    { videoId: 'mdNMbYbJEAs', title: 'Blippi Meets a Robot' },
+    { videoId: 'RkEwemWx1_0', title: 'How Robots Are Made' },
+    { videoId: 'F_0FypwMXPA', title: 'Cool Robots for Kids' },
+  ],
+  Maths: [
+    { videoId: 'jSL5WNcTtUs', title: 'Numberblocks — Math for Kids' },
+    { videoId: 'NybHckSEQBI', title: 'Learn to Count' },
+    { videoId: 'G7m1P2VfnKY', title: 'Shapes for Kids' },
+  ],
+  English: [
+    { videoId: '8irSFvoyLHQ', title: 'Learn English for Kids — Dialogues' },
+    { videoId: 'Ahc7LVWfmEw', title: 'ABC Song — Alphabet Phonics' },
+    { videoId: 'PqobLZ7pblk', title: 'Sight Words for Beginners' },
+  ],
+  Programming: [
+    { videoId: 'iGQRj5V5TVc', title: 'What Is Programming? — Block Coding' },
+    { videoId: '4VwE2gb6XKI', title: 'Learn to Code for Kids' },
+    { videoId: 'kqtD5dpn9C8', title: 'Scratch Programming Tutorial' },
+  ],
 }
 
 export const SUBJECT_KEYS = Object.keys(SUBJECTS)
